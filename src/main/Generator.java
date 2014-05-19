@@ -7,9 +7,22 @@ public class Generator {
             "zuiopghjklvbnmZUIOPGHJKLVBNM67890" };
     private Random rand = new Random();
     private boolean special;
+    private boolean specific = false;
 
     public Generator(boolean special) {
         this.special = special;
+    }
+
+    public boolean special() {
+        return this.special;
+    }
+
+    public void setSpecial(boolean special) {
+        this.special = special;
+    }
+
+    public void setSpecific(boolean specific) {
+        this.specific = specific;
     }
 
     public String createPW(int length) { // Suppose length 8-24
@@ -51,24 +64,58 @@ public class Generator {
                 return out;
             case 18:
                 // rrrlll-rrrr-lllrrr
+                out += fillSequence(3, alphabet[1]);
+                out += fillSequence(3, alphabet[0]);
+                out += "-";
+                out += fillSequence(4, alphabet[1]);
+                out += "-";
+                out += fillSequence(3, alphabet[0]);
+                out += fillSequence(3, alphabet[1]);
                 return out;
             case 19:
                 // llll-rrrr-llll-rrrr
+                out += fillSequence(4, alphabet[0]);
+                out += "-";
+                out += fillSequence(4, alphabet[1]);
+                out += "-";
+                out += fillSequence(4, alphabet[0]);
+                out += "-";
+                out += fillSequence(4, alphabet[1]);
                 return out;
             case 20:
                 // rrrlll-rrrlll-rrrlll
+                out += fillSequence(3, alphabet[1]);
+                out += fillSequence(3, alphabet[0]);
+                out += "-";
+                out += fillSequence(3, alphabet[1]);
+                out += fillSequence(3, alphabet[0]);
+                out += "-";
+                out += fillSequence(3, alphabet[1]);
+                out += fillSequence(3, alphabet[0]);
                 return out;
             case 24:
                 // llll-rrrr-llll-rrrr-llll
+                out += fillSequence(4, alphabet[0]);
+                out += "-";
+                out += fillSequence(4, alphabet[1]);
+                out += "-";
+                out += fillSequence(4, alphabet[0]);
+                out += "-";
+                out += fillSequence(4, alphabet[1]);
+                out += "-";
+                out += fillSequence(4, alphabet[0]);
                 return out;
             default:
-                return createPWnoSpecial(length);
-
+                if (specific) {
+                    return createPWnoSpecial(length);
+                } else {
+                    return null;
+                }
             }
         }
     }
 
-    public String createPWnoSpecial(int length) {
+    private String createPWnoSpecial(int length) {
         String out = "";
         // Format : lllrrrrllrrrlll.....
         int handAlternator = 1;
@@ -81,7 +128,7 @@ public class Generator {
         return out;
     }
 
-    public String fillSequence(int size, String a) {
+    private String fillSequence(int size, String a) {
         String r = "";
         for (int i = 0; i < size; i++) {
             r += a.charAt(rand.nextInt(a.length()));
