@@ -43,6 +43,11 @@ public class Generator {
             case 15:
                 // llll-rrrlll-rrrr
                 out += fillSequence(4, alphabet[0]);
+                out += "-";
+                out += fillSequence(4, alphabet[1]);
+                out += fillSequence(4, alphabet[0]);
+                out += "-";
+                out += fillSequence(4, alphabet[1]);
                 return out;
             case 18:
                 // rrrlll-rrrr-lllrrr
