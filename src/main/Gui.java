@@ -2,10 +2,10 @@ package main;
 
 public class Gui {
     public static void main(String[] args) {
-        Generator gen = new Generator(true);
-        for (int i = 0; i < 10; i++){
-            String s = gen.createPW(16);
-            System.out.println(s+"  ||  "+s.length());
+        Generator gen = new Generator(false);
+        for (int i = 8; i <= 24; i++) {
+            String s = gen.createPW(i);
+            System.out.println(s + " | "+s.length());
         }
     }
 }

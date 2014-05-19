@@ -12,23 +12,24 @@ public class Generator {
         this.special = special;
     }
 
-    public String createPW(int length) {// Length in [6-24]
+    public String createPW(int length) { // Suppose length 8-24
         String out = "";
-        int handAlternator = 1;
-        /*
-         * length = 4*length/4 + length/4 -1
-         */
-        while (length > 0) {
-            String handSelected = alphabet[(handAlternator++) % 2];
-            for (int i = 0; i < 4; i++) {
-                out += handSelected.charAt(rand.nextInt(handSelected.length()));
+        if (special) {
+            // Format : rrll-rrll-rrll......
+            // TODO : normalize length
+        } else {
+            // Format : lllrrrrllrrrlll.....
+            int handAlternator = 1;
+            while (length > 0) {
+                String tempAlph = alphabet[handAlternator++ % 2];
+                int sequenceLength = length <= 4 ? length : rand.nextInt(3) + 2; // 2
+                                                                                 // -
+                                                                                 // 4
+                for (int i = 0; i < sequenceLength; i++) {
+                    out += tempAlph.charAt(rand.nextInt(tempAlph.length()));
+                }
+                length -= sequenceLength;
             }
-            length -= 4;
-            if (special && length > 0) {
-                out += "-";
-                length--;
-            }
-
         }
         return out;
     }
