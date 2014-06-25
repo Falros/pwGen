@@ -1,50 +1,111 @@
 package main;
 
-public class Gui {
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class Gui extends JFrame {
+    private static final long serialVersionUID = 1L;
+
+    String currentSpecial = "Dashes";
+
+    JPanel wholeThing = new JPanel(new BorderLayout());
+    JPanel menuPanel = new JPanel(new FlowLayout());
+    JPanel contentPanel = new JPanel(new GridLayout(4, 2));
+
+    JLabel specialLabel = new JLabel("Rule");
+    String[] specialChoices = { "None", "Dashes", "Any" };
+    JComboBox<String> special = new JComboBox<>(specialChoices);
+
+    JLabel lengthLabel = new JLabel("Length");
+    String[] lengthChoices = { "8", "10", "12", "16", "20", "22", "24" };
+    String[] dashLengthChoices = { "9", "13", "14", "18", "19", "20", "24" };
+    JComboBox<String> length = new JComboBox<>(dashLengthChoices);
+
+    JButton fillButton = new JButton("Fill");
+
     public static void main(String[] args) {
-        if (args.length == 0) {
-            Generator gen = new Generator(false);
-            System.out.println("\n Passwords with no special characters :\n");
-            for (int i = 8; i <= 24; i++) {
-                String s = gen.createPW(i);
-                if (s != null) {
-                    if (s.length() < 10) {
-                        System.out.print(" ");
+        new Gui();
+    }
+
+    Gui() {
+        super("pwGen");
+        setSize(440, 200);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation((screenSize.width - this.getWidth()) / 2,
+                (screenSize.height - this.getHeight()) / 2);
+        setResizable(false);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        menuPanel.add(specialLabel);
+        special.setSelectedItem(currentSpecial);
+        length.setSelectedItem("19");
+        special.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!special.getSelectedItem().equals(currentSpecial)) {
+                    currentSpecial = (String) special.getSelectedItem();
+                    length.removeAllItems();
+                    if (currentSpecial.equals("Dashes")) {
+                        for (String s : dashLengthChoices) {
+                            length.addItem(s);
+                        }
+                        length.setSelectedItem("19");
+                    } else {
+                        for (String s : lengthChoices) {
+                            length.addItem(s);
+                        }
+                        length.setSelectedItem("16");
                     }
-                    System.out.println(s.length() + "  |  " + s);
                 }
             }
-            System.out.println("\n\nPasswords with special characters :\n");
-            gen.setSpecial(true);
-            for (int i = 8; i <= 24; i++) {
-                String s = gen.createPW(i);
-                if (s != null) {
-                    if (s.length() < 10) {
-                        System.out.print(" ");
-                    }
-                    System.out.println(s.length() + "  |  " + s);
+        });
+        fillButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                contentPanel.removeAll();
+                for (int i = 0; i < 8; i++) {
+                    contentPanel.add(new JTextField(
+                            fill((String) special.getSelectedItem(),
+                                    Integer.parseInt((String) length
+                                            .getSelectedItem()))));
                 }
+                contentPanel.revalidate();
+                contentPanel.repaint();
             }
-            System.out.println("\n");
-        } else {
-            if (args[0].equals("nofuss")) {
-                Generator gen = new Generator(true);
-                System.out.println("\n");
-                System.out.println(gen.createPW(19));
-                gen.setSpecial(false);
-                System.out.println(gen.createPW(12));
-                System.out.println("\n");
-            } else if (args[0].equals("card")) {
-                Generator gen = new Generator(true);
-                System.out.println("\n");
-                for (int i = 0; i < 5; i++) {
-                    System.out.println(gen.createPW(19));
-                }
-                System.out.println("\n");
-            } else {
-                System.out
-                        .println("Illegal arguments. Valid arguments are nofuss and card.");
-            }
+        });
+        menuPanel.add(special);
+        menuPanel.add(lengthLabel);
+        menuPanel.add(length);
+        menuPanel.add(fillButton);
+        for (int i = 0; i < 8; i++) {
+            contentPanel.add(new JTextField());
         }
+        wholeThing.add(menuPanel, BorderLayout.NORTH);
+        wholeThing.add(contentPanel, BorderLayout.CENTER);
+        add(wholeThing);
+        setVisible(true);
+    }
+
+    public static String fill(String special, int length) {
+        Generator gen;
+        if (special.equals("Dashes")) {
+            gen = new Generator(true, false);
+        } else {
+            gen = new Generator(false, special.equals("Any"));
+        }
+        return gen.createPW(length);
     }
 }

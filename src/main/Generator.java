@@ -3,31 +3,48 @@ package main;
 import java.util.Random;
 
 public class Generator {
-    private final String[] alphabet = { "qwertasdfgyxcvQWERTASDFGYXCV12345",
+    private final String[] noSpecialAlphabet = {
+            "qwertasdfgyxcvQWERTASDFGYXCV12345",
             "zuiopghjklvbnmZUIOPGHJKLVBNM67890" };
+    private final String[] specialAlphabet = {
+            "qwertasdfgyxcvQWERTASDFGYXCV12345+*%&<>",
+            "zuiopghjklvbnmZUIOPGHJKLVBNM67890/()=?!$.,-_" };
+    private String[] alphabet = noSpecialAlphabet;
     private Random rand = new Random();
+    private boolean dashes;
     private boolean special;
-    private boolean specific = false;
 
-    public Generator(boolean special) {
+    public Generator(boolean dashes, boolean special) {
+        this.dashes = dashes;
         this.special = special;
+        if (special)
+            this.alphabet = specialAlphabet;
+    }
+
+    public boolean dashes() {
+        return this.dashes;
     }
 
     public boolean special() {
         return this.special;
     }
 
-    public void setSpecial(boolean special) {
-        this.special = special;
+    public void setDashes(boolean dashes) {
+        this.dashes = dashes;
     }
 
-    public void setSpecific(boolean specific) {
-        this.specific = specific;
+    public void setSpecial(boolean special) {
+        this.special = special;
+        if (special) {
+            this.alphabet = specialAlphabet;
+        } else {
+            this.alphabet = noSpecialAlphabet;
+        }
     }
 
     public String createPW(int length) { // Suppose length 8-24
-        if (!special) {
-            return createPWnoSpecial(length);
+        if (!dashes) {
+            return createPWnoDashes(length);
         } else {
             String out = "";
             switch (length) {
@@ -106,16 +123,13 @@ public class Generator {
                 out += fillSequence(4, alphabet[0]);
                 return out;
             default:
-                if (specific) {
-                    return createPWnoSpecial(length);
-                } else {
-                    return null;
-                }
+                // doesn't happen
+                return null;
             }
         }
     }
 
-    private String createPWnoSpecial(int length) {
+    private String createPWnoDashes(int length) {
         String out = "";
         // Format : lllrrrrllrrrlll.....
         int handAlternator = 1;
